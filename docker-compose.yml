@@ -1,17 +1,17 @@
 services:
-  #backend:
-  #  build: ./app
-  #  image: python-compose-web
-  #  ports:
-  #    - "3033:3033"              
-  #  environment:
-  #    PORT: "3033"
-  #    REDIS_HOST: redis          
-  #    REDIS_PORT: "6379"
-  #  depends_on:
-  #    redis:
-  #      condition: service_healthy   
-  #  restart: unless-stopped
+  backend:
+    build: ./app
+    image: python-backend
+    ports:
+      - "3033:3033"              
+    environment:
+      PORT: "3033"
+      REDIS_HOST: redis          
+      REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy   
+    restart: unless-stopped
   redis:
     image: redis:7-alpine
     volumes:
