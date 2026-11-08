@@ -1,0 +1,40 @@
+services:
+  #backend:
+  #  build: ./app
+  #  image: python-compose-web
+  #  ports:
+  #    - "3033:3033"              
+  #  environment:
+  #    PORT: "3033"
+  #    REDIS_HOST: redis          
+  #    REDIS_PORT: "6379"
+  #  depends_on:
+  #    redis:
+  #      condition: service_healthy   
+  #  restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-data:/data         
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+  redis-insight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"              
+    environment:
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: "6379"
+      RI_REDIS_ALIAS: "weather-db"
+    volumes:
+      - redis-insight-data:/data 
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis-data:
+  redis-insight-data:
