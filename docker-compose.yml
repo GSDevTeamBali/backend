@@ -1,36 +1,49 @@
+# The same setup as example 10 – only the "web" service is now a FastAPI app.
+# Start everything with:  docker compose up --build
+
 services:
-  backend:
+  # ---------------------------------------------------------------------------
+  # FastAPI application – built from ./app/Dockerfile, served by Uvicorn
+  # ---------------------------------------------------------------------------
+  web:
     build: ./app
-    image: python-backend
+    image: python-fastapi-web
     ports:
-      - "3033:3033"              
+      - "3033:3033"              # API: http://localhost:3033, docs: http://localhost:3033/docs
     environment:
-      PORT: "3033"
-      REDIS_HOST: redis          
+      REDIS_HOST: redis
       REDIS_PORT: "6379"
     depends_on:
       redis:
-        condition: service_healthy   
+        condition: service_healthy
     restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Redis – stores the data, reachable only inside this project
+  # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
     volumes:
-      - redis-data:/data         
+      - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 2s
       timeout: 2s
       retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Redis Insight – web console to look at the stored data
+  # ---------------------------------------------------------------------------
   redis-insight:
     image: redis/redisinsight:latest
     ports:
-      - "5540:5540"              
+      - "5540:5540"              # open http://localhost:5540
     environment:
       RI_REDIS_HOST: redis
       RI_REDIS_PORT: "6379"
-      RI_REDIS_ALIAS: "weather-db"
+      RI_REDIS_ALIAS: "fastapi-redis"
     volumes:
-      - redis-insight-data:/data 
+      - redis-insight-data:/data
     depends_on:
       redis:
         condition: service_healthy
