@@ -8,11 +8,13 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY server.py .
+COPY main.py .
 
 RUN useradd --create-home appuser
 USER appuser
 
 EXPOSE 3033
 
-CMD ["python", "server.py"]
+# FastAPI is a framework, not a server. Uvicorn is the ASGI server that runs it:
+#   main:app  -> the `app` object from the file main.py
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3033"]
