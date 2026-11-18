@@ -1,0 +1,12 @@
+apiVersion: 1
+
+datasources:
+  - name: Weather API
+    uid: weather-api
+    type: yesoreyeram-infinity-datasource
+    url: http://web:3033
+    isDefault: true
+    editable: true
+    jsonData:
+      allowedHosts:
+        - http://web:3033

@@ -48,6 +48,24 @@ services:
       redis:
         condition: service_healthy
 
+  # ---------------------------------------------------------------------------
+  # Grafana – dashboards with charts, reads the readings from the REST API
+  # ---------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"              # open http://localhost:3000 (admin / admin)
+    environment:
+      GF_INSTALL_PLUGINS: yesoreyeram-infinity-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+
 volumes:
   redis-data:
   redis-insight-data:
+  grafana-data:

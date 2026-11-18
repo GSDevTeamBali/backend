@@ -84,6 +84,10 @@ async def health() -> dict[str, str]:
 
 @app.post("/readings", response_model=Reading, status_code=status.HTTP_201_CREATED)
 async def create_reading(reading_in: ReadingIn) -> Reading:
+    # Example:
+    #   curl -X POST http://localhost:3033/readings \
+    #     -H "Content-Type: application/json" \
+    #     -d '{"device_id": "device-123", "temperature": 22.5, "pressure": 1013.25, "humidity": 45.0}'
     reading_id = await db.incr(NEXT_ID_KEY)                  # atomic: no two items get the same id
     reading = Reading(id=reading_id, **reading_in.model_dump())
     await db.hset(READINGS_KEY, str(reading_id), reading.model_dump_json())
