@@ -28,6 +28,7 @@ from typing import Annotated
 
 import redis.asyncio as redis
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -67,6 +68,15 @@ app = FastAPI(
     description="Python + FastAPI + Redis",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+# Allow browsers on other origins (e.g. http://127.0.0.1:8765) to call this API.
+# Without these headers the request reaches the server, but JavaScript cannot read the response.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/", response_class=PlainTextResponse)
